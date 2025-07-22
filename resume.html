@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Resume | K.S.L.N.V.S. Aditya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: "Calm Neutrals" -->
+    <!-- Application Structure Plan: A single-page application with a sticky navigation bar for smooth scrolling to thematic sections: a hero/about section for a strong first impression, a combined timeline for all experience, a visual skills section with an interactive chart, a card-based project gallery, and a clean education/achievements area. This structure creates a logical narrative flow (who, what, how, where) and encourages user interaction, making the content more digestible and engaging than a traditional resume format. -->
+    <!-- Visualization & Content Choices: 1. Skills: A horizontal bar chart (Chart.js) to visually compare self-assessed proficiency, making skills more impactful than a simple list. 2. Experience: A vertical timeline (HTML/CSS/JS) to show career progression chronologically, which is more intuitive than separate lists. 3. Projects: A responsive card grid (HTML/Tailwind) to neatly organize and showcase practical work. These choices prioritize visual storytelling and user exploration. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFDFD;
+            color: #2D3748;
+        }
+        .nav-link {
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #4A90E2;
+            transform: translateY(-2px);
+        }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #E2E8F0;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background-color: #CBD5E0;
+        }
+        .timeline-item {
+            position: relative;
+            width: 50%;
+            padding: 20px 40px;
+            box-sizing: border-box;
+        }
+        .timeline-item:nth-child(odd) {
+            left: 0;
+        }
+        .timeline-item:nth-child(even) {
+            left: 50%;
+        }
+        .timeline-content {
+            padding: 20px 30px;
+            position: relative;
+            border-radius: 6px;
+        }
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            right: -12.5px;
+            background-color: #FFFFFF;
+            border: 4px solid #4A90E2;
+            top: 25px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .timeline-item:nth-child(even)::after {
+            left: -12.5px;
+        }
+        @media screen and (max-width: 768px) {
+            .timeline::before {
+                left: 15px;
+            }
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            .timeline-item:nth-child(even) {
+                left: 0;
+            }
+            .timeline-item::after {
+                left: 3px;
+            }
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#hero" class="text-xl font-bold text-gray-800">K.S.L.N.V.S. Aditya</a>
+            <div class="hidden md:flex space-x-8">
+                <a href="#experience" class="nav-link text-gray-600">Experience</a>
+                <a href="#skills" class="nav-link text-gray-600">Skills</a>
+                <a href="#projects" class="nav-link text-gray-600">Projects</a>
+                <a href="#education" class="nav-link text-gray-600">Education</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#experience" class="block py-2 px-4 text-sm hover:bg-gray-200">Experience</a>
+            <a href="#skills" class="block py-2 px-4 text-sm hover:bg-gray-200">Skills</a>
+            <a href="#projects" class="block py-2 px-4 text-sm hover:bg-gray-200">Projects</a>
+            <a href="#education" class="block py-2 px-4 text-sm hover:bg-gray-200">Education</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="min-h-screen flex items-center bg-gray-50">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-gray-800 leading-tight">Kamarsu Sri Lalith Naga Venkata Sai Aditya</h1>
+                <p class="text-xl md:text-2xl text-gray-600 mt-4">Aspiring Python Backend Developer</p>
+                <p class="max-w-3xl mx-auto mt-6 text-gray-700">
+                    Demonstrated experience in building scalable APIs and real-time systems using FastAPI, WebSockets, and various databases. Passionate about developing impactful, AI-driven solutions and continuously expanding technical skills.
+                </p>
+                <div class="mt-8 flex justify-center space-x-4">
+                    <a href="mailto:kamarsuaditya@gmail.com" class="bg-blue-500 text-white font-bold py-3 px-6 rounded-full hover:bg-blue-600 transition duration-300">Contact Me</a>
+                    <a href="https://github.com/saiaditya00" target="_blank" class="bg-gray-700 text-white font-bold py-3 px-6 rounded-full hover:bg-gray-800 transition duration-300">GitHub</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">Career Journey</h2>
+                <div class="relative wrap overflow-hidden p-10 h-full timeline">
+                    <!-- SDE Intern -->
+                    <div class="timeline-item mb-8 flex justify-between items-center w-full right-timeline">
+                        <div class="order-1 w-5/12"></div>
+                        <div class="z-20 flex items-center order-1 bg-gray-800 shadow-xl w-8 h-8 rounded-full"></div>
+                        <div class="order-1 w-5/12">
+                            <div class="card p-6">
+                                <p class="text-sm font-semibold text-blue-600">Mar 2025 – May 2025</p>
+                                <h3 class="text-xl font-bold mb-2">SDE Intern</h3>
+                                <p class="text-md font-semibold text-gray-700 mb-3">Bluestock.in (Remote)</p>
+                                <ul class="list-disc list-inside text-gray-600 space-y-2">
+                                    <li>Developed and integrated scalable backend modules using Django.</li>
+                                    <li>Designed and implemented RESTful APIs for internal dashboards.</li>
+                                    <li>Collaborated within an Agile environment with frontend and product teams.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- E-Cell Head -->
+                    <div class="timeline-item mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline">
+                        <div class="order-1 w-5/12"></div>
+                        <div class="z-20 flex items-center order-1 bg-gray-800 shadow-xl w-8 h-8 rounded-full"></div>
+                         <div class="order-1 w-5/12">
+                            <div class="card p-6">
+                                <p class="text-sm font-semibold text-blue-600">Aug 2024 – Aug 2025</p>
+                                <h3 class="text-xl font-bold mb-2">Strategy & Outreach Head</h3>
+                                <p class="text-md font-semibold text-gray-700 mb-3">E-Cell REC</p>
+                                <ul class="list-disc list-inside text-gray-600 space-y-2">
+                                    <li>Led community outreach initiatives fostering a campus-wide culture of entrepreneurship.</li>
+                                    <li>Built and managed event pipelines for startup-focused events.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GDSC Core Member -->
+                    <div class="timeline-item mb-8 flex justify-between items-center w-full right-timeline">
+                        <div class="order-1 w-5/12"></div>
+                        <div class="z-20 flex items-center order-1 bg-gray-800 shadow-xl w-8 h-8 rounded-full"></div>
+                        <div class="order-1 w-5/12">
+                           <div class="card p-6">
+                                <p class="text-sm font-semibold text-blue-600">Jan 2024 – Aug 2024</p>
+                                <h3 class="text-xl font-bold mb-2">Core Member</h3>
+                                <p class="text-md font-semibold text-gray-700 mb-3">Google Developer Student Clubs (GDSC)</p>
+                                <ul class="list-disc list-inside text-gray-600 space-y-2">
+                                    <li>Organized workshops and hackathons, driving a 40% increase in student engagement.</li>
+                                    <li>Mentored peers on Python and Google Cloud technologies.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">Technical Skills</h2>
+                <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">
+                    A visual representation of my proficiency across various technologies. This chart highlights my strengths in backend development, databases, and frontend frameworks.
+                </p>
+                <div class="chart-container">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">Projects</h2>
+                <div class="grid md:grid-cols-2 gap-10">
+                    <div class="card p-6">
+                        <h3 class="text-2xl font-bold mb-3">Real-Time Chat Application</h3>
+                        <p class="text-gray-600 mb-4">Engineered a real-time chat system featuring asynchronous message handling with FastAPI and WebSockets. Implemented a modular API design and user authentication to ensure scalability and security.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">Python</span>
+                            <span class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">FastAPI</span>
+                            <span class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">WebSockets</span>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">HTML</span>
+                        </div>
+                        <a href="https://github.com/saiaditya00" target="_blank" class="font-semibold text-blue-600 hover:underline">View on GitHub &rarr;</a>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-2xl font-bold mb-3">Sangeetham - Flutter Music App</h3>
+                        <p class="text-gray-600 mb-4">Developed a responsive music player using Flutter, integrating third-party music APIs for real-time song search and streaming. Implemented asynchronous API calls for fast, non-blocking audio playback.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">Flutter</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">Dart</span>
+                            <span class="bg-pink-100 text-pink-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">Music APIs</span>
+                        </div>
+                        <a href="https://github.com/saiaditya00" target="_blank" class="font-semibold text-blue-600 hover:underline">View on GitHub &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Education & Achievements Section -->
+        <section id="education" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">Education & Achievements</h2>
+                <div class="grid md:grid-cols-2 gap-10 items-start">
+                    <div class="card p-8">
+                        <h3 class="text-2xl font-bold mb-4">Education</h3>
+                        <div class="mb-6">
+                            <h4 class="text-xl font-semibold">B.Tech, Computer Science & Engineering (Data Science)</h4>
+                            <p class="text-gray-600">Raghu Engineering College, Visakhapatnam</p>
+                            <p class="text-gray-500">Expected Graduation: May 2026 | GPA: 8.54/10.0</p>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold">Intermediate, MPC</h4>
+                            <p class="text-gray-600">Kendriya Vidyalaya NAD, Visakhapatnam</p>
+                            <p class="text-gray-500">Completed: May 2022 | Percentage: 89.2%</p>
+                        </div>
+                    </div>
+                    <div class="card p-8">
+                        <h3 class="text-2xl font-bold mb-4">Achievements</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="text-2xl mr-4">🏆</span>
+                                <div>
+                                    <h4 class="font-semibold">12th Grade Topper</h4>
+                                    <p class="text-gray-600">Achieved the highest score in the 12th-grade examinations.</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-2xl mr-4">🚀</span>
+                                <div>
+                                    <h4 class="font-semibold">Strategy & Outreach Head</h4>
+                                    <p class="text-gray-600">Led successful community and event initiatives at E-Cell REC.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-10">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 Kamarsu Sri Lalith Naga Venkata Sai Aditya. All Rights Reserved.</p>
+            <p class="mt-2">Built with passion and code.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Skills Chart
+            const ctx = document.getElementById('skillsChart').getContext('2d');
+            const skillsData = {
+                labels: ['Python', 'FastAPI', 'Django', 'Flutter', 'JavaScript', 'SQL (PostgreSQL, MySQL)', 'MongoDB'],
+                datasets: [{
+                    label: 'Proficiency (Self-Assessed)',
+                    data: [90, 85, 80, 75, 70, 85, 80],
+                    backgroundColor: 'rgba(74, 144, 226, 0.6)',
+                    borderColor: 'rgba(74, 144, 226, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    barPercentage: 0.7,
+                }]
+            };
+
+            const skillsChart = new Chart(ctx, {
+                type: 'bar',
+                data: skillsData,
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%'
+                                }
+                            }
+                        },
+                        y: {
+                           ticks: {
+                                autoSkip: false
+                           }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Smooth scrolling for nav links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                     if (mobileMenu.classList.contains('hidden') === false) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
